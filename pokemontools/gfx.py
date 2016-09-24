@@ -516,6 +516,26 @@ def get_pic_animation(tmap, w, h):
     frame_text = ''
     bitmask_text = ''
 
+    """
+    Tile 0x7f is reserved for whitespace, and will be skipped.
+    Sorry if this bites anyone.
+    """
+    add_comment = False
+    for i, tile in enumerate(tmap):
+        if tile >= 0x7f:
+            tile += 1
+            tmap[i] = tile
+            add_comment = True
+    if add_comment:
+        frame_text += '; WARNING: this frameset is larger than 0x7f tiles.\n'
+        frame_text += '; Tile 0x7f is reserved for whitespace, so it has been skipped, but only in this file.\n'
+        frame_text += '; This means 0x7f is now 0x80, 0x80 is 0x81, and so on.'
+        frame_text += '; The graphics are unaffected. No padding tiles are added.\n'
+        frame_text += '; You will need to map them yourself accordingly if you want to use more than 0x7f tiles.\n'
+        frame_text += '; Please look for this notice in extras/pokemontools/gfx.py for more info.\n'
+        frame_text += '; If extras/ does not exist, this file is probably out of date, and you should remake it.\n'
+        frame_text += '\n'
+
     frames = list(split(tmap, w * h))
     base = frames.pop(0)
     bitmasks = []
